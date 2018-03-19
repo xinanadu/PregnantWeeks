@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tv;
     private Handler mHandler;
-    private final int CALENDAR_ID = 2;
+    private final int CALENDAR_ID = 3;
     private ScrollView mScrollView;
 
     @Override
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                tv.setText("No Permission");
+                tv.append((String) msg.obj);
             }
         };
     }
@@ -84,14 +84,8 @@ public class MainActivity extends AppCompatActivity {
             ContentResolver cr = getContentResolver();
             Uri uri = CalendarContract.Events.CONTENT_URI;
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                mHandler.sendEmptyMessage(0);
+                Message msg = mHandler.obtainMessage(0, "No Permission");
+                msg.sendToTarget();
                 return -1L;
             }
             String selection = CalendarContract.Events.CALENDAR_ID + " = " + CALENDAR_ID;
@@ -148,39 +142,91 @@ public class MainActivity extends AppCompatActivity {
                 startMillis = beginTime.getTimeInMillis();
                 endMillis = endTime.getTimeInMillis();
 
-                String str = "孕";
-                str += count / 7;
-                str += "周";
-                str += count % 7;
-                str += "天";
+                String title = "孕";
+                int weeks = count / 7;
+                title += weeks;
+                title += "周";
+                int days = count % 7;
+                title += days;
+                title += "天";
 
+                String tempTitle = "";
+                String tempDescription = "";
+                if (weeks == 12 && days == 0) {
+                    tempTitle = "产检1";
+                    tempDescription = "第一次检查：(13 周之前)" + "\n" +
+                            "建立《深圳市母子保健手册》;尿HCG、妇科检查、血常规、尿常规、心电图、超声常规检查、胎盘成熟度检查、血红蛋白电泳试验(地贫筛查);";
+                } else if (weeks == 16 && days == 0) {
+
+                    tempTitle = "产检2";
+                    tempDescription = "第二次检查：(16—18 周)" + "\n" +
+                            "产前检查(均含胎心多普勒)、血型(ABO、Rh)、血常规、尿常规、肾功能3项(尿素氮、肌酐、尿酸)、" + "\n" +
+                            "肝功能6项(谷草转氨酶、谷丙转氨酶、总蛋白、白蛋白、总胆红素、胆汁酸)、乙肝两对半、丙肝病毒抗体、梅毒血清抗体、血糖、" + "\n" +
+                            "唐氏筛查项目(包括甲胎蛋白、雌三醇、绒毛膜促性腺激素)、甲功三项(备选);";
+                } else if (weeks == 20 && days == 0) {
+                    tempTitle = "产检3";
+                    tempDescription = "第三次检查：(20—24 周)" + "\n" +
+                            "产前检查、尿常规、超声常规检查(包括胎儿产前诊断项目)、胎儿脐血监测和胎盘成熟度检测;";
+                } else if (weeks == 24 && days == 0) {
+                    tempTitle = "产检4";
+                    tempDescription = "第四次检查：(24—28 周)" + "\n" +
+                            "产前检查、尿常规、血糖筛查、抗D滴度检查(备选);";
+                } else if (weeks == 28 && days == 0) {
+                    tempTitle = "产检5";
+                    tempDescription = "第五次检查：(28—30周)" + "\n" +
+                            "产前检查、尿常规、ABO抗体检测;";
+                } else if (weeks == 30 && days == 0) {
+                    tempTitle = "产检6";
+                    tempDescription = "第六次检查：(30—32周)" + "\n" +
+                            " 产前检查、血常规、尿常规、超声常规检查、胎盘成熟度检测;";
+                } else if (weeks == 32 && days == 0) {
+                    tempTitle = "产检7";
+                    tempDescription = " 第七次检查：(32—34周)" + "\n" +
+                            "产前检查、尿常规;";
+                } else if (weeks == 34 && days == 0) {
+                    tempTitle = "产检8";
+                    tempDescription = "第八次检查：(34—36周)" + "\n" +
+                            "产前检查、胎心监测、尿常规;";
+                } else if (weeks == 37 && days == 0) {
+                    tempTitle = "产检9";
+                    tempDescription = "第九次检查：(37周)" + "\n" +
+                            "产前检查、尿常规、超声常规检查、胎盘成熟度检测、血常规、肾功能3项(尿素氮、肌酐、尿酸)、肝功能6项(谷草转氨酶、谷丙转氨酶、总蛋白、白蛋白、总胆红素、胆汁酸)、胎心监测;";
+                } else if (weeks == 38 && days == 0) {
+                    tempTitle = "产检10";
+                    tempDescription = "第十次检查：(38周)" + "\n" +
+                            " 产前检查、胎心监测、尿常规;";
+                } else if (weeks == 39 && days == 0) {
+                    tempTitle = "产检11";
+                    tempDescription = "第十一次检查：(39周)" + "\n" +
+                            "产前检查、尿常规、超声常规检查、胎盘成熟度检测、胎心监测;";
+                } else if (weeks == 40 && days == 0) {
+                    tempTitle = "产检12";
+                    tempDescription = "第十二次检查：(40 周)" + "\n" +
+                            "产前检查、胎心监测、尿常规。";
+                }
+                if (tempTitle != "")
+                    addOneEvent(beginTime, endTime, tempTitle, tempDescription);
 
                 ContentResolver cr = getContentResolver();
                 ContentValues values = new ContentValues();
                 values.put(CalendarContract.Events.DTSTART, startMillis);
                 values.put(CalendarContract.Events.DTEND, endMillis);
-                values.put(CalendarContract.Events.TITLE, str);
+                values.put(CalendarContract.Events.TITLE, title);
                 values.put(CalendarContract.Events.DESCRIPTION, "陪伴照顾老婆，宽容因怀孕不正常的脾气，保证老婆每天都开开心心的。\n" +
                         "我们一定生个健康聪明的宝宝！");
                 values.put(CalendarContract.Events.CALENDAR_ID, CALENDAR_ID);
                 values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PUBLIC);
                 values.put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Hong_Kong");
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    mHandler.sendEmptyMessage(0);
+                    Message msg = mHandler.obtainMessage(0, "No Permission");
+                    msg.sendToTarget();
                     return -1L;
 
                 }
                 Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
 
                 SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-                publishProgress(format1.format(beginTime.getTime()) + ", " + str + "\n");
+                publishProgress(format1.format(beginTime.getTime()) + ", " + title + "\n");
 
                 beginTime.add(Calendar.DATE, 1);
                 endTime.add(Calendar.DATE, 1);
@@ -206,15 +252,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void addOneEvent() {
-        long calID = 3;
+    private void addOneEvent(Calendar beginTime, Calendar endTime, String title, String description) {
         long startMillis = 0;
         long endMillis = 0;
-        Calendar beginTime = Calendar.getInstance();
-        beginTime.set(2018, 0, 21, 0, 01);
         startMillis = beginTime.getTimeInMillis();
-        Calendar endTime = Calendar.getInstance();
-        endTime.set(2018, 0, 21, 0, 11);
         endMillis = endTime.getTimeInMillis();
 
 
@@ -222,10 +263,9 @@ public class MainActivity extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Events.DTSTART, startMillis);
         values.put(CalendarContract.Events.DTEND, endMillis);
-        values.put(CalendarContract.Events.TITLE, "孕0周1天");
-        values.put(CalendarContract.Events.DESCRIPTION, "陪伴照顾老婆，宽容因怀孕不正常的脾气，保证老婆每天都开开心心的。\n" +
-                "我们一定生个健康聪明的宝宝！");
-        values.put(CalendarContract.Events.CALENDAR_ID, calID);
+        values.put(CalendarContract.Events.TITLE, title);
+        values.put(CalendarContract.Events.DESCRIPTION, description);
+        values.put(CalendarContract.Events.CALENDAR_ID, CALENDAR_ID);
         values.put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Hong_Kong");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -235,11 +275,12 @@ public class MainActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            tv.setText("No Permission");
             return;
         }
         Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
-        tv.setText("Success");
+
+        Message msg = mHandler.obtainMessage(0, "Add Success" + title + "\n");
+        msg.sendToTarget();
 
     }
 
