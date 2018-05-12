@@ -25,6 +25,11 @@
                 android:text="Add" />
 
             <Button
+                android:id="@+id/buttonQuery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Query" />
+            <Button
                 android:id="@+id/buttonDel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
